@@ -1,7 +1,9 @@
 from osgeo import gdal, ogr
+from scipy.interpolate import RegularGridInterpolator
 import numpy as np
 
 from collections import namedtuple
+
 
 # The ordering of window X and Y bounds is a mess in GDAL (compare e.g.
 # gdal.Translate() and gdal.Warp()). Using this little structure and
@@ -10,6 +12,7 @@ BoundingBox = namedtuple(
     'BoundingBox',
     ['x_min', 'x_max', 'y_min', 'y_max'],
 )
+
 
 def get_raster_window(dataset, bbox):
     """
@@ -83,3 +86,58 @@ def get_raster_window(dataset, bbox):
     )
     
     return window_dataset
+
+
+def get_raster_interpolator(dataset):
+    """
+    Return a scipy.interpolate.RegularGridInterpolator corresponding to a GDAL
+    raster.
+    
+    :param dataset: Raster dataset in which to interpolate
+    :type dataset: GDAL Dataset object
+    :returns: RegularGridInterpolator accepting georeferenced X and Y input
+    """
+    
+    geotransform = dataset.GetGeoTransform()
+    band = dataset.GetRasterBand(1)
+    nodata_value = band.GetNoDataValue()
+    z_grid = band.ReadAsArray()
+    num_rows, num_cols = z_grid.shape
+    
+    if geotransform[2] != 0.0 or geotransform[4] != 0.0:
+        raise ValueError("geotransforms with rotation are unsupported")
+    
+    # X and Y values for the individual columns/rows of the raster. The 0.5 is
+    # added in order to obtain the coordinates of the cell centers rather than
+    # the corners.
+    x_values = geotransform[0] + geotransform[1]*(0.5+np.arange(num_cols))
+    y_values = geotransform[3] + geotransform[5]*(0.5+np.arange(num_rows))
+
+    # RegularGridInterpolator requires the x and y arrays to be in strictly
+    # increasing order, accommodate this
+    if geotransform[1] > 0.0:
+        col_step = 1
+    else:
+        col_step = -1
+        x_values = np.flip(x_values)
+
+    if geotransform[5] > 0.0:
+        row_step = 1
+    else:
+        row_step = -1
+        y_values = np.flip(y_values)
+        
+    # NODATA values must be replaced with NaN for interpolation purposes
+    z_grid[z_grid == nodata_value] = np.nan
+    
+    # The grid must be transposed to swap (row, col) coordinates into (x, y)
+    # order.
+    interpolator = RegularGridInterpolator(
+        points=(x_values, y_values),
+        values=z_grid[::row_step, ::col_step].transpose(),
+        method='linear',
+        bounds_error=False,
+        fill_value=np.nan,
+    )
+    
+    return interpolator

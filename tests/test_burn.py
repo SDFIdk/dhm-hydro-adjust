@@ -3,6 +3,7 @@ from hydroadjust.burning import burn_lines
 from osgeo import gdal, ogr, osr
 import numpy as np
 
+
 def test_burn_lines():
     # Test that line features are burned in correctly.
     # In particular, we want this test to fail if Z values are not getting
