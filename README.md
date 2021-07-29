@@ -77,7 +77,7 @@ provided input raster.
 ### Burning the prepared vector objects into a raster tile
 
 ```
-python -m hydroadjust.burn_hydro_adjustments ORIGINAL_DTM/1km_NNNN_EEE.tif ADJUSTED_DTM/1km_NNNN_EEE.tif --lines LINES_TO_BURN.sqlite --horseshoe-lines HORSESHOE_LINES_TO_BURN.sqlite
+python -m hydroadjust.burn_adjustments ORIGINAL_DTM/1km_NNNN_EEE.tif ADJUSTED_DTM/1km_NNNN_EEE.tif --lines LINES_TO_BURN.sqlite --horseshoe-lines HORSESHOE_LINES_TO_BURN.sqlite
 ```
 
 Both of the `--lines` and the `--horseshoe-lines` arguments are optional,
