@@ -76,6 +76,9 @@ def test_raster_interpolator():
     input_grid = np.arange(12.0).reshape(3, 4)
     input_num_rows, input_num_cols = input_grid.shape
     input_projection = "EPSG:25832"
+    # The X/Y grid below includes a column that sits exactly on the edge of
+    # the defined area. Avoid rounding error issues here by taking a pixel
+    # size (0.5) that can be exactly represented as a floating-point value.
     input_geotransform = [600000.0, 0.5, 0.0, 6200000.0, 0.0, -0.5]
     input_nodata_value = -9999 # should not appear in output
     
