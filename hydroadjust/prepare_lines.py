@@ -1,5 +1,4 @@
 from hydroadjust.sampling import BoundingBox, get_raster_window, get_raster_interpolator
-from hydroadjust.burning import burn_lines
 
 from osgeo import gdal, ogr
 import numpy as np
