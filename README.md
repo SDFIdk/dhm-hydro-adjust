@@ -74,11 +74,16 @@ is chosen to be smaller than the diagonal (georeferenced) pixel size of the
 raster to burn into. The default value is half the diagonal pixel size of the
 provided input raster.
 
+### Merging the rendered lines into one datasource
+
+```
+ogrmerge LINES_WITH_Z.sqlite HORSESHOE_LINES_WITH_Z.sqlite -o LINES_TO_BURN.sqlite
+```
+
 ### Burning the prepared vector objects into a raster tile
 
 ```
-python -m hydroadjust.cli.burn_line_z ORIGINAL_DTM/1km_NNNN_EEE.tif ADJUSTED_DTM/1km_NNNN_EEE.tif --lines LINES_WITH_Z.sqlite --horseshoe-lines HORSESHOE_LINES_WITH_Z.sqlite
+python -m hydroadjust.cli.burn_line_z LINES_TO_BURN.sqlite ORIGINAL_DTM/1km_NNNN_EEE.tif ADJUSTED_DTM/1km_NNNN_EEE.tif
 ```
 
-Both of the `--lines` and the `--horseshoe-lines` arguments are optional,
-allowing either to be omitted if so desired.
+This will iterate through the layers of the provided vector datasource, successively burning them into the raster.
