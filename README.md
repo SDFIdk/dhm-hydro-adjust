@@ -63,7 +63,7 @@ python -m hydroadjust.cli.sample_line_z ORIGINAL_DTM.vrt LINE_OBJECTS.sqlite LIN
 ### Preparing horseshoe objects as lines for burning
 
 ```
-python -m hydroadjust.cli.sample_horseshoe_z_lines.py ORIGINAL_DTM.vrt HORSESHOE_OBJECTS.sqlite HORSESHOE_LINES_WITH_Z.sqlite
+python -m hydroadjust.cli.sample_horseshoe_z_lines ORIGINAL_DTM.vrt HORSESHOE_OBJECTS.sqlite HORSESHOE_LINES_WITH_Z.sqlite
 ```
 
 The horseshoe profile sampling density can be controlled with the optional
