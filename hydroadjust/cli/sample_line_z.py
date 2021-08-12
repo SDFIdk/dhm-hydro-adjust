@@ -2,6 +2,7 @@ from hydroadjust.sampling import BoundingBox, get_raster_window, get_raster_inte
 
 from osgeo import gdal, ogr
 import numpy as np
+from tqdm import tqdm
 import argparse
 import logging
 
@@ -46,7 +47,7 @@ unexpected_pointcount_count = 0
 valid_sampling_count = 0
 invalid_sampling_count = 0
 
-for input_line_feature in input_lines_layer:
+for input_line_feature in tqdm(input_lines_layer, ascii=True, unit="obj"):
     input_line_geometry = input_line_feature.GetGeometryRef()
     
     # Rule out unexpected geometry types (apparently calling .GetGeomType() on

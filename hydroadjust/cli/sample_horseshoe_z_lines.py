@@ -2,6 +2,7 @@ from hydroadjust.sampling import BoundingBox, get_raster_window, get_raster_inte
 
 from osgeo import gdal, ogr
 import numpy as np
+from tqdm import tqdm
 import argparse
 import logging
 
@@ -58,7 +59,7 @@ unexpected_pointcount_count = 0
 valid_profile_count = 0
 invalid_profile_count = 0
 
-for horseshoe_feature in input_horseshoes_layer:
+for horseshoe_feature in tqdm(input_horseshoes_layer, ascii=True, unit="obj"):
     horseshoe_geometry = horseshoe_feature.GetGeometryRef()
     
     # Rule out non-horseshoe geometries (apparently calling .GetGeomType() on

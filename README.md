@@ -36,8 +36,8 @@ the line objects.
 
 ## Installation
 
-A Python 3 environment with GDAL, NumPy and SciPy is required. To run the
-tests, pytest is also required.
+A Python 3 environment with GDAL, NumPy, SciPy and tqdm is required. To run
+the tests, pytest is also required.
 
 ## Usage
 
