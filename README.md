@@ -57,13 +57,13 @@ stabilized yet. Expect breaking changes.**
 ### Preparing line objects for burning
 
 ```
-python -m hydroadjust.prepare_lines ORIGINAL_DTM.vrt LINE_OBJECTS.sqlite LINES_TO_BURN.sqlite
+python -m hydroadjust.cli.sample_line_z ORIGINAL_DTM.vrt LINE_OBJECTS.sqlite LINES_WITH_Z.sqlite
 ```
 
 ### Preparing horseshoe objects as lines for burning
 
 ```
-python -m hydroadjust.prepare_horseshoe_lines ORIGINAL_DTM.vrt HORSESHOE_OBJECTS.sqlite HORSESHOE_LINES_TO_BURN.sqlite
+python -m hydroadjust.cli.sample_horseshoe_z_lines.py ORIGINAL_DTM.vrt HORSESHOE_OBJECTS.sqlite HORSESHOE_LINES_WITH_Z.sqlite
 ```
 
 The horseshoe profile sampling density can be controlled with the optional
@@ -77,7 +77,7 @@ provided input raster.
 ### Burning the prepared vector objects into a raster tile
 
 ```
-python -m hydroadjust.burn_adjustments ORIGINAL_DTM/1km_NNNN_EEE.tif ADJUSTED_DTM/1km_NNNN_EEE.tif --lines LINES_TO_BURN.sqlite --horseshoe-lines HORSESHOE_LINES_TO_BURN.sqlite
+python -m hydroadjust.cli.burn_line_z ORIGINAL_DTM/1km_NNNN_EEE.tif ADJUSTED_DTM/1km_NNNN_EEE.tif --lines LINES_WITH_Z.sqlite --horseshoe-lines HORSESHOE_LINES_WITH_Z.sqlite
 ```
 
 Both of the `--lines` and the `--horseshoe-lines` arguments are optional,
