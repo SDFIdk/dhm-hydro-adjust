@@ -64,14 +64,29 @@ stabilized yet. Expect breaking changes.**
 ### Preparing line objects for burning
 
 ```
-sample_line_z ORIGINAL_DTM.vrt LINE_OBJECTS.sqlite LINES_WITH_Z.sqlite
+sample_line_z [-h] input_raster input_lines output_lines
 ```
+
+| Parameter | Description |
+| --------- | ----------- |
+| `input_raster` | Path to GDAL-readable raster dataset from which to sample elevation |
+| `input_lines` | Path or connection string to OGR-readable datasource containing the input 2D line objects |
+| `output_lines` | Path to file to write output elevation-sampled 3D line objects to. Will be written in SQLite format |
+| `-h` | Print help and exit |
 
 ### Preparing horseshoe objects as lines for burning
 
 ```
-sample_horseshoe_z_lines ORIGINAL_DTM.vrt HORSESHOE_OBJECTS.sqlite HORSESHOE_LINES_WITH_Z.sqlite
+sample_horseshoe_z_lines [-h] [--max-sample-dist MAX_SAMPLE_DIST] input_raster input_horseshoes output_lines
 ```
+
+| Parameter | Description |
+| --------- | ----------- |
+| `input_raster` | Path to GDAL-readable raster dataset from which to sample elevation |
+| `input_horseshoes` |  Path or connection string to OGR-readable datasource containing the input 2D horseshoe objects |
+| `output_lines` | Path to file to write output elevation-sampled 3D line objects to. Will be written in SQLite format |
+| `--max-sample-dist` | *(optional)* Maximum allowed sample distance (in georeferenced units) along profiles |
+| `-h` | Print help and exit |
 
 The horseshoe profile sampling density can be controlled with the optional
 `--max-sample-dist` argument; for example, using `--max-sample-dist 0.1` will
@@ -81,18 +96,56 @@ is chosen to be smaller than the diagonal (georeferenced) pixel size of the
 raster to burn into. The default value is half the diagonal pixel size of the
 provided input raster.
 
-### Merging the rendered lines into one datasource
+### Burning the prepared vector objects into a raster tile
 
-This uses the `ogrmerge` tool from GDAL/OGR:
+```
+burn_line_z [-h] lines input_raster output_raster
+```
+
+| Parameter | Description |
+| --------- | ----------- |
+| `lines` | Path or connection string to OGR-readable datasource containing one or more layers of LineStringZ objects to burn into raster |
+| `input_raster` | Path to GDAL-readable raster dataset for input tile |
+| `output_raster` | Path to write output raster tile to. Will be written in GeoTIFF format |
+| `-h` | Print help and exit |
+
+This will iterate through the layers of the datasource in `lines`, successively burning layers into the raster.
+
+## Example workflow
+
+As an example, the steps below illustrate preparing the relevant intermediate data and burning it into a raster tile. The example filenames below are:
+
+| Example filename | Description |
+| ---------------- | ----------- |
+| ORIGINAL_DTM.vrt | Input VRT containing the original DEM (i.e. pre-adjustment) |
+| ORIGINAL_DTM/1km_NNNN_EEE.tif | Input raster tile for which corresponding output will be produced. It is assumed this input tile is included in the VRT |
+| LINE_OBJECTS.sqlite | Input 2D line objects |
+| HORSESHOE_OBJECTS.sqlite | Input 2D horseshoe objects |
+| LINES_WITH_Z.sqlite | Intermediate datasource of prepared 3D line objects |
+| HORSESHOE_LINES_WITH_Z.sqlite | Intermediate datasource of horseshoes rendered as 3D lines |
+| LINES_TO_BURN.sqlite | Intermediate datasource containing prepared 3D lines for both line objects and horseshoes, combined in one datasource |
+| ADJUSTED_DTM/1km_NNNN_EEE.tif | Output raster tile, created from the input raster tile with 3D lines burned in |
+
+Prepare 3D line objects:
+
+```
+sample_line_z ORIGINAL_DTM.vrt LINE_OBJECTS.sqlite LINES_WITH_Z.sqlite
+```
+
+Render horseshoes as 3D lines:
+
+```
+sample_horseshoe_z_lines ORIGINAL_DTM.vrt HORSESHOE_OBJECTS.sqlite HORSESHOE_LINES_WITH_Z.sqlite
+```
+
+Merge the rendered 3D lines into one datasource, using the `ogrmerge` tool from GDAL/OGR:
 
 ```
 ogrmerge LINES_WITH_Z.sqlite HORSESHOE_LINES_WITH_Z.sqlite -o LINES_TO_BURN.sqlite
 ```
 
-### Burning the prepared vector objects into a raster tile
+Create the adjusted DEM tile from the 3D lines and the original DEM tile:
 
 ```
 burn_line_z LINES_TO_BURN.sqlite ORIGINAL_DTM/1km_NNNN_EEE.tif ADJUSTED_DTM/1km_NNNN_EEE.tif
 ```
-
-This will iterate through the layers of the provided vector datasource, successively burning them into the raster.
