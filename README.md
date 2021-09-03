@@ -34,6 +34,14 @@ of profile-to-profile line segments with endpoints of appropriate elevation.
 Those line segments can then be burned into the raster in a manner similar to
 the line objects.
 
+![Line object example](docs/images/line_example.png)
+
+*Adjustment with line object, left to right: original DTM, line object, adjusted DTM*
+
+![Horseshoe object example](docs/images/horseshoe_example.png)
+
+*Adjustment with horseshoe object, left to right: original DTM, horseshoe object, horseshoe object rendered as lines, adjusted DTM*
+
 ## Installation
 
 A Python 3 environment with GDAL, NumPy, SciPy and tqdm is required. To run
