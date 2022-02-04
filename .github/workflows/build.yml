@@ -25,7 +25,7 @@ jobs:
         # Show pre-install environment state
         conda info --quiet
         # Install dependencies to base environment due to lack of persistence between workflow steps
-        conda install --quiet -v --yes --name base --channel conda-forge gdal numpy scipy tqdm pytest
+        conda install --quiet -v --yes --name base --channel conda-forge python=${{ matrix.python-version }} gdal numpy scipy tqdm pytest
         # Show post-install environment state
         conda info --quiet
     - name: Install package with pip
