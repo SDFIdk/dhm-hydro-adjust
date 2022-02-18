@@ -45,11 +45,11 @@ the line objects.
 ## Installation
 
 A Python 3 environment with GDAL, NumPy, SciPy and tqdm is required. To run
-the tests, pytest is also required. A suitable conda environment (here called
+the tests, pytest is also required. A suitable Conda environment (here called
 "hydroadjust") can be created with:
 
 ```
-conda create -n hydroadjust -c conda-forge gdal numpy scipy tqdm pytest
+conda env create -n hydroadjust -f environment.yml
 ```
 
 For now, the tools support editable installation using `pip`. To install this

@@ -1,0 +1,10 @@
+name: hydroadjust-dev
+channels:
+  - conda-forge
+dependencies:
+  - gdal
+  - numpy
+  - scipy
+  - tqdm
+  # For testing only
+  - pytest
