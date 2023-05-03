@@ -46,7 +46,7 @@ def main():
     input_horseshoes_datasrc = ogr.Open(input_horseshoes_path)
     input_horseshoes_layer = input_horseshoes_datasrc.GetLayer()
 
-    output_lines_driver = ogr.GetDriverByName("SQLite")
+    output_lines_driver = ogr.GetDriverByName("gpkg")
     output_lines_datasrc = output_lines_driver.CreateDataSource(output_lines_path)
     output_lines_datasrc.CreateLayer(
         "rendered_horseshoe_lines",
