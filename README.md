@@ -84,7 +84,7 @@ sample_line_z [-h] input_raster input_lines output_lines
 | --------- | ----------- |
 | `input_raster` | Path to GDAL-readable raster dataset from which to sample elevation |
 | `input_lines` | Path or connection string to OGR-readable datasource containing the input 2D line objects |
-| `output_lines` | Path to file to write output elevation-sampled 3D line objects to. Will be written in SQLite format |
+| `output_lines` | Path to file to write output elevation-sampled 3D line objects to. Will be written in gpkg format |
 | `-h` | Print help and exit |
 
 ### Preparing horseshoe objects as lines for burning
@@ -97,7 +97,7 @@ sample_horseshoe_z_lines [-h] [--max-sample-dist MAX_SAMPLE_DIST] input_raster i
 | --------- | ----------- |
 | `input_raster` | Path to GDAL-readable raster dataset from which to sample elevation |
 | `input_horseshoes` |  Path or connection string to OGR-readable datasource containing the input 2D horseshoe objects |
-| `output_lines` | Path to file to write output elevation-sampled 3D line objects to. Will be written in SQLite format |
+| `output_lines` | Path to file to write output elevation-sampled 3D line objects to. Will be written in gpkg format |
 | `--max-sample-dist` | *(optional)* Maximum allowed sample distance (in georeferenced units) along profiles |
 | `-h` | Print help and exit |
 
@@ -132,33 +132,33 @@ As an example, the steps below illustrate preparing the relevant intermediate da
 | ---------------- | ----------- |
 | ORIGINAL_DTM.vrt | Input VRT containing the original DEM (i.e. pre-adjustment) |
 | ORIGINAL_DTM/1km_NNNN_EEE.tif | Input raster tile for which corresponding output will be produced. It is assumed this input tile is included in the VRT |
-| LINE_OBJECTS.sqlite | Input 2D line objects |
-| HORSESHOE_OBJECTS.sqlite | Input 2D horseshoe objects |
-| LINES_WITH_Z.sqlite | Intermediate datasource of prepared 3D line objects |
-| HORSESHOE_LINES_WITH_Z.sqlite | Intermediate datasource of horseshoes rendered as 3D lines |
-| LINES_TO_BURN.sqlite | Intermediate datasource containing prepared 3D lines for both line objects and horseshoes, combined in one datasource |
+| LINE_OBJECTS.gpkg | Input 2D line objects |
+| HORSESHOE_OBJECTS.gpkg | Input 2D horseshoe objects |
+| LINES_WITH_Z.gpkg | Intermediate datasource of prepared 3D line objects |
+| HORSESHOE_LINES_WITH_Z.gpkg | Intermediate datasource of horseshoes rendered as 3D lines |
+| LINES_TO_BURN.gpkg | Intermediate datasource containing prepared 3D lines for both line objects and horseshoes, combined in one datasource |
 | ADJUSTED_DTM/1km_NNNN_EEE.tif | Output raster tile, created from the input raster tile with 3D lines burned in |
 
 Prepare 3D line objects:
 
 ```
-sample_line_z ORIGINAL_DTM.vrt LINE_OBJECTS.sqlite LINES_WITH_Z.sqlite
+sample_line_z ORIGINAL_DTM.vrt LINE_OBJECTS.gpkg LINES_WITH_Z.gpkg
 ```
 
 Render horseshoes as 3D lines:
 
 ```
-sample_horseshoe_z_lines ORIGINAL_DTM.vrt HORSESHOE_OBJECTS.sqlite HORSESHOE_LINES_WITH_Z.sqlite
+sample_horseshoe_z_lines ORIGINAL_DTM.vrt HORSESHOE_OBJECTS.gpkg HORSESHOE_LINES_WITH_Z.gpkg
 ```
 
 Merge the rendered 3D lines into one datasource, using the `ogrmerge` tool from GDAL/OGR:
 
 ```
-ogrmerge LINES_WITH_Z.sqlite HORSESHOE_LINES_WITH_Z.sqlite -o LINES_TO_BURN.sqlite
+ogrmerge LINES_WITH_Z.gpkg HORSESHOE_LINES_WITH_Z.gpkg -o LINES_TO_BURN.gpkg
 ```
 
 Create the adjusted DEM tile from the 3D lines and the original DEM tile:
 
 ```
-burn_line_z LINES_TO_BURN.sqlite ORIGINAL_DTM/1km_NNNN_EEE.tif ADJUSTED_DTM/1km_NNNN_EEE.tif
+burn_line_z LINES_TO_BURN.gpkg ORIGINAL_DTM/1km_NNNN_EEE.tif ADJUSTED_DTM/1km_NNNN_EEE.tif
 ```

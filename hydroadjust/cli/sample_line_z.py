@@ -34,7 +34,7 @@ def main():
     input_lines_datasrc = ogr.Open(input_lines_path)
     input_lines_layer = input_lines_datasrc.GetLayer()
 
-    output_lines_driver = ogr.GetDriverByName("SQLite")
+    output_lines_driver = ogr.GetDriverByName("gpkg")
     output_lines_datasrc = output_lines_driver.CreateDataSource(output_lines_path)
     output_lines_datasrc.CreateLayer(
         "rendered_lines",
